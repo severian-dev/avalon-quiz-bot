@@ -5,10 +5,10 @@
   "type": "module",
   "main": "dist/index.js",
   "scripts": {
-    "dev": "tsx src/index.ts",
+    "dev": "tsx --env-file=.env src/index.ts",
     "build": "tsup",
     "start": "node --env-file=.env dist/index.js",
-    "deploy-commands": "tsx src/deploy-commands.ts",
+    "deploy-commands": "tsx --env-file=.env src/deploy-commands.ts",
     "test": "node --test --experimental-strip-types src/tests/**/*.test.ts"
   },
   "keywords": [
