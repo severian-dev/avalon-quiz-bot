@@ -1,0 +1,23 @@
+{
+  "verification": {
+    "channelId": "",
+    "roleId": "",
+    "embedTitle": "Welcome!",
+    "embedDescription": "Click below to begin the verification quiz.",
+    "embedColor": "#5865F2",
+    "buttonLabel": "Start Verification Quiz"
+  },
+  "quiz": {
+    "questionsPerQuiz": 10,
+    "passThreshold": 7,
+    "timeoutMinutes": 5
+  },
+  "cooldown": {
+    "baseMinutes": 5,
+    "maxMinutes": 720,
+    "resetOnPass": true
+  },
+  "admin": {
+    "roleId": ""
+  }
+}

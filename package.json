@@ -1,0 +1,33 @@
+{
+  "name": "avalon-quiz-bot",
+  "version": "1.0.0",
+  "description": "A Discord verification bot that gates server access behind a configurable quiz.",
+  "type": "module",
+  "main": "dist/index.js",
+  "scripts": {
+    "dev": "tsx src/index.ts",
+    "build": "tsup",
+    "start": "node --env-file=.env dist/index.js",
+    "deploy-commands": "tsx src/deploy-commands.ts",
+    "test": "node --test --experimental-strip-types src/tests/**/*.test.ts"
+  },
+  "keywords": [
+    "discord",
+    "bot",
+    "quiz",
+    "verification"
+  ],
+  "license": "ISC",
+  "dependencies": {
+    "better-sqlite3": "^12.6.2",
+    "discord.js": "^14.25.1",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.13",
+    "@types/node": "^25.0.10",
+    "tsup": "^8.5.1",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3"
+  }
+}

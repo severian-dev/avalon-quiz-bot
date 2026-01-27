@@ -1,0 +1,97 @@
+[
+  {
+    "type": "multiple_choice",
+    "questionText": "What is the capital of France?",
+    "choices": [
+      { "emoji": "🅰️", "label": "London", "isCorrect": false },
+      { "emoji": "🅱️", "label": "Paris", "isCorrect": true },
+      { "emoji": "🇨", "label": "Berlin", "isCorrect": false },
+      { "emoji": "🇩", "label": "Madrid", "isCorrect": false }
+    ],
+    "explanation": "Paris is the capital of France."
+  },
+  {
+    "type": "multiple_choice",
+    "questionText": "Which planet is known as the Red Planet?",
+    "choices": [
+      { "emoji": "🅰️", "label": "Venus", "isCorrect": false },
+      { "emoji": "🅱️", "label": "Mars", "isCorrect": true },
+      { "emoji": "🇨", "label": "Jupiter", "isCorrect": false },
+      { "emoji": "🇩", "label": "Saturn", "isCorrect": false }
+    ],
+    "explanation": "Mars is known as the Red Planet due to its reddish appearance."
+  },
+  {
+    "type": "text_input",
+    "questionText": "Name the process by which plants convert sunlight into energy.",
+    "correctAnswer": "photosynthesis",
+    "explanation": "Photosynthesis converts light energy into chemical energy."
+  },
+  {
+    "type": "multiple_choice",
+    "questionText": "What is the largest ocean on Earth?",
+    "choices": [
+      { "emoji": "🅰️", "label": "Atlantic Ocean", "isCorrect": false },
+      { "emoji": "🅱️", "label": "Indian Ocean", "isCorrect": false },
+      { "emoji": "🇨", "label": "Pacific Ocean", "isCorrect": true },
+      { "emoji": "🇩", "label": "Arctic Ocean", "isCorrect": false }
+    ],
+    "explanation": "The Pacific Ocean is the largest and deepest ocean."
+  },
+  {
+    "type": "text_input",
+    "questionText": "What element has the chemical symbol 'O'?",
+    "correctAnswer": "oxygen",
+    "explanation": "Oxygen has the chemical symbol O and atomic number 8."
+  },
+  {
+    "type": "multiple_choice",
+    "questionText": "Who wrote 'Romeo and Juliet'?",
+    "choices": [
+      { "emoji": "🅰️", "label": "Charles Dickens", "isCorrect": false },
+      { "emoji": "🅱️", "label": "William Shakespeare", "isCorrect": true },
+      { "emoji": "🇨", "label": "Jane Austen", "isCorrect": false },
+      { "emoji": "🇩", "label": "Mark Twain", "isCorrect": false }
+    ],
+    "explanation": "William Shakespeare wrote Romeo and Juliet around 1594-1596."
+  },
+  {
+    "type": "multiple_choice",
+    "questionText": "What is the speed of light approximately?",
+    "choices": [
+      { "emoji": "🅰️", "label": "150,000 km/s", "isCorrect": false },
+      { "emoji": "🅱️", "label": "300,000 km/s", "isCorrect": true },
+      { "emoji": "🇨", "label": "450,000 km/s", "isCorrect": false },
+      { "emoji": "🇩", "label": "600,000 km/s", "isCorrect": false }
+    ],
+    "explanation": "Light travels at approximately 299,792 km/s in a vacuum."
+  },
+  {
+    "type": "text_input",
+    "questionText": "What is the chemical formula for water?",
+    "correctAnswer": "H2O",
+    "explanation": "Water is composed of two hydrogen atoms and one oxygen atom."
+  },
+  {
+    "type": "multiple_choice",
+    "questionText": "Which continent is the Sahara Desert located on?",
+    "choices": [
+      { "emoji": "🅰️", "label": "Asia", "isCorrect": false },
+      { "emoji": "🅱️", "label": "Africa", "isCorrect": true },
+      { "emoji": "🇨", "label": "Australia", "isCorrect": false },
+      { "emoji": "🇩", "label": "South America", "isCorrect": false }
+    ],
+    "explanation": "The Sahara Desert covers much of North Africa."
+  },
+  {
+    "type": "multiple_choice",
+    "questionText": "What year did World War II end?",
+    "choices": [
+      { "emoji": "🅰️", "label": "1943", "isCorrect": false },
+      { "emoji": "🅱️", "label": "1945", "isCorrect": true },
+      { "emoji": "🇨", "label": "1947", "isCorrect": false },
+      { "emoji": "🇩", "label": "1950", "isCorrect": false }
+    ],
+    "explanation": "World War II ended in 1945 with the surrender of Japan."
+  }
+]
