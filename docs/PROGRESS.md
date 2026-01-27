@@ -124,9 +124,4 @@
 
 ---
 
-## Changelog
-
-| Date | Change |
-|---|---|
-| 2026-01-27 | Initial planning complete. README, implementation plan, and progress tracker created. |
-| 2026-01-27 | Full implementation of phases 1-7. All source files created, TypeScript compiles cleanly, tsup build succeeds. Pending: live testing with a Discord server. |
+See [CHANGELOG.md](../CHANGELOG.md) for a versioned history of changes.
