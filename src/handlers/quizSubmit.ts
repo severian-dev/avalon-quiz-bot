@@ -6,6 +6,7 @@ import { scoreAttempt, isExpired } from '../services/quizService.js';
 import { recordFailure, resetCooldown } from '../services/cooldownService.js';
 import { assignVerifiedRole } from '../services/roleService.js';
 import { buildResultEmbed } from '../builders/resultEmbed.js';
+import { updatePresence } from '../services/presenceService.js';
 
 export async function handleQuizSubmit(
   interaction: ButtonInteraction,
@@ -52,6 +53,7 @@ export async function handleQuizSubmit(
 
     const message = buildResultEmbed(result, config.quiz.passThreshold);
     await interaction.update(message);
+    updatePresence(interaction.client, db);
   } else {
     attemptRepo.complete(db, attempt.id, 'failed');
 
@@ -64,5 +66,6 @@ export async function handleQuizSubmit(
 
     const message = buildResultEmbed(result, config.quiz.passThreshold, cooldownUntil);
     await interaction.update(message);
+    updatePresence(interaction.client, db);
   }
 }

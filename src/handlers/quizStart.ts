@@ -4,6 +4,7 @@ import type { BotConfig } from '../types/index.js';
 import { checkCooldown, formatDuration } from '../services/cooldownService.js';
 import { startOrResumeQuiz, getQuestionAtIndex } from '../services/quizService.js';
 import { buildQuestionMessage } from '../builders/questionEmbed.js';
+import { updatePresence } from '../services/presenceService.js';
 
 export async function handleQuizStart(
   interaction: ButtonInteraction,
@@ -43,4 +44,6 @@ export async function handleQuizStart(
 
   const message = buildQuestionMessage(question, attempt, attempt.questionIds.length);
   await interaction.reply({ ...message, ephemeral: true });
+
+  updatePresence(interaction.client, db);
 }
