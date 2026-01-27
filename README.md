@@ -13,6 +13,7 @@ A Discord verification bot that gates server access behind a configurable quiz. 
 - **Exponential backoff** on failure (5 min -> 10 -> 20 -> ... -> 12h cap) that persists across bot restarts
 - **Admin slash commands** for live question management (add, remove, list, import, stats) -- no restart required
 - **5-minute quiz timeout** to keep sessions within Discord's ephemeral message limits
+- **Dynamic presence** showing live active quiz count and total verified members (e.g., "Watching 2 active quizzes | 47 verified")
 
 ## Tech Stack
 
@@ -183,4 +184,4 @@ npm test             # Run tests
 
 ## License
 
-ISC
+MIT
