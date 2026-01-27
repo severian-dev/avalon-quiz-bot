@@ -20,7 +20,7 @@ export async function handleQuizStart(
     const timestamp = Math.floor(cooldown.retryAfter!.getTime() / 1000);
     await interaction.reply({
       content: `You're on cooldown. You can try again <t:${timestamp}:R>.`,
-      ephemeral: true,
+      flags: 64,
     });
     return;
   }
@@ -28,7 +28,7 @@ export async function handleQuizStart(
   // Start or resume quiz
   const result = startOrResumeQuiz(db, userId, guildId, config);
   if ('error' in result) {
-    await interaction.reply({ content: result.error, ephemeral: true });
+    await interaction.reply({ content: result.error, flags: 64 });
     return;
   }
 
@@ -37,13 +37,13 @@ export async function handleQuizStart(
   if (!question) {
     await interaction.reply({
       content: 'Failed to load quiz question. Please contact an admin.',
-      ephemeral: true,
+      flags: 64,
     });
     return;
   }
 
   const message = buildQuestionMessage(question, attempt, attempt.questionIds.length);
-  await interaction.reply({ ...message, ephemeral: true });
+  await interaction.reply({ ...message, flags: 64 });
 
   updatePresence(interaction.client, db);
 }

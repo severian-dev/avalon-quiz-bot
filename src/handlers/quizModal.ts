@@ -15,7 +15,7 @@ export async function handleQuizModal(
   if (!attempt) {
     await interaction.reply({
       content: 'No active quiz found. Please start a new one.',
-      ephemeral: true,
+      flags: 64,
     });
     return;
   }
@@ -24,7 +24,7 @@ export async function handleQuizModal(
     attemptRepo.complete(db, attempt.id, 'abandoned');
     await interaction.reply({
       content: 'Your quiz has timed out. Please start a new one.',
-      ephemeral: true,
+      flags: 64,
     });
     return;
   }
@@ -39,7 +39,7 @@ export async function handleQuizModal(
   if (!question) {
     await interaction.reply({
       content: 'Failed to load question. Please contact an admin.',
-      ephemeral: true,
+      flags: 64,
     });
     return;
   }

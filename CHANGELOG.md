@@ -8,6 +8,25 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Added
+
+- **Multi-select question support**: Questions with multiple correct answers now automatically become multi-select questions. Users can toggle multiple choices on/off, and scoring requires selecting ALL correct answers with NO incorrect ones.
+- **Answer shuffling**: Multiple-choice answers are now scrambled for each quiz attempt using deterministic seeding. Each attempt sees choices in a different random order while maintaining consistency during navigation. Display emojis (1️⃣ 2️⃣ 3️⃣ 4️⃣) remain fixed for clean UI while answer text shuffles behind them.
+- **Submit button validation**: The Submit Quiz button is now disabled until all questions have been answered, preventing incomplete submissions.
+- **Reset attempts command**: Added `npm run reset-attempts` script to abandon all in-progress quizzes and clear cooldowns for testing/maintenance.
+- **Customizable pass message**: Added `verification.passTitle` and `verification.passMessage` config options to customize the success title and message shown when users pass the quiz. Pass message supports `{correct}` and `{total}` template variables.
+- **Verification embed thumbnail**: Added optional `verification.embedThumbnail` and `verification.passThumbnail` fields to display images on the verification embed and pass message. Leave empty to hide.
+
+### Changed
+
+- **Button labels simplified**: Multiple-choice buttons now show only emojis (or numbers as fallback) instead of full answer text, with answers displayed in the embed description.
+
+### Fixed
+
+- **Deprecation warnings**: Replaced deprecated `ephemeral: true` with `flags: 64` to use the modern Discord.js flags API.
+- **Permission checking**: Added proactive permission validation in `/setup-verification` with clear error messages listing missing permissions.
+- **Button label length**: Fixed crashes when answer text exceeded Discord's 80-character button label limit.
+
 ## [1.0.0] - 2026-01-27
 
 ### Added

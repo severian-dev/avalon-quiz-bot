@@ -1,7 +1,9 @@
 import type Database from 'better-sqlite3';
 import type { BotConfig, Question, QuizAttempt } from '../types/index.js';
+import { isMultiSelectQuestion } from '../types/index.js';
 import * as questionRepo from '../database/repositories/questionRepo.js';
 import * as attemptRepo from '../database/repositories/attemptRepo.js';
+import { seededShuffle, generateShuffleSeed } from '../utils/shuffle.js';
 
 export function drawQuestions(db: Database.Database, config: BotConfig): Question[] {
   return questionRepo.getRandom(db, config.quiz.questionsPerQuiz);
@@ -23,7 +25,7 @@ export interface ScoreResult {
   details: Array<{
     questionId: number;
     questionText: string;
-    userAnswer: string | null;
+    userAnswer: string | string[] | null;
     correctAnswer: string;
     isCorrect: boolean;
   }>;
@@ -46,16 +48,43 @@ export function scoreAttempt(
     let isCorrect = false;
 
     if (question.type === 'multiple_choice' && question.choices) {
-      const correctChoice = question.choices.find((c) => c.isCorrect);
-      expectedAnswer = correctChoice?.label ?? 'Unknown';
-      if (userAnswer !== null) {
-        const chosenIndex = parseInt(userAnswer, 10);
-        const chosen = question.choices[chosenIndex];
-        isCorrect = chosen?.isCorrect ?? false;
+      // Shuffle choices the same way they were displayed to the user
+      const seed = generateShuffleSeed(attempt.id, question.id);
+      const shuffledChoices = seededShuffle(question.choices, seed);
+
+      const isMultiSelect = isMultiSelectQuestion(question);
+
+      if (isMultiSelect) {
+        // Multi-select: must select ALL correct and NO incorrect
+        // Find correct indices in the SHUFFLED array
+        const correctIndices = shuffledChoices
+          .map((c, i) => (c.isCorrect ? String(i) : null))
+          .filter((i): i is string => i !== null)
+          .sort();
+
+        expectedAnswer = correctIndices
+          .map((i) => shuffledChoices[parseInt(i, 10)].label)
+          .join(', ');
+
+        if (userAnswer !== null && Array.isArray(userAnswer)) {
+          const userIndices = [...userAnswer].sort();
+          isCorrect =
+            userIndices.length === correctIndices.length &&
+            userIndices.every((val, idx) => val === correctIndices[idx]);
+        }
+      } else {
+        // Single-select: check if the shuffled choice at user's index is correct
+        const correctChoice = shuffledChoices.find((c) => c.isCorrect);
+        expectedAnswer = correctChoice?.label ?? 'Unknown';
+        if (userAnswer !== null && typeof userAnswer === 'string') {
+          const chosenIndex = parseInt(userAnswer, 10);
+          const chosen = shuffledChoices[chosenIndex];
+          isCorrect = chosen?.isCorrect ?? false;
+        }
       }
     } else {
       expectedAnswer = question.correctAnswer ?? '';
-      if (userAnswer !== null) {
+      if (userAnswer !== null && typeof userAnswer === 'string') {
         isCorrect = userAnswer.trim().toLowerCase() === expectedAnswer.trim().toLowerCase();
       }
     }

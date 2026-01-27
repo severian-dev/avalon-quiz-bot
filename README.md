@@ -4,16 +4,19 @@ A Discord verification bot that gates server access behind a configurable quiz. 
 
 ## Features
 
-- **Verification embed** with a customizable message, color, and button label posted to a designated channel
+- **Verification embed** with customizable message, color, thumbnail image, and button label posted to a designated channel
 - **Randomized quizzes** drawing N questions from a configurable pool of 20+
-- **Multiple-choice questions** answered via emoji-labeled buttons
+- **Multiple-choice questions** answered via emoji-labeled buttons (1️⃣ 2️⃣ 3️⃣ 4️⃣) - supports both single-select and multi-select
+- **Answer shuffling** -- answer text appears in different random order for each quiz attempt to prevent answer sharing (emojis 1️⃣-4️⃣ stay consistent)
 - **Text-input questions** answered via Discord modals
 - **Ephemeral quiz flow** -- only the quiz-taker sees their questions and results
-- **Automatic role assignment** on passing the quiz
+- **Automatic role assignment** on passing the quiz with customizable success message and thumbnail
+- **Submit validation** -- submit button is disabled until all questions are answered
 - **Exponential backoff** on failure (5 min -> 10 -> 20 -> ... -> 12h cap) that persists across bot restarts
 - **Admin slash commands** for live question management (add, remove, list, import, stats) -- no restart required
 - **5-minute quiz timeout** to keep sessions within Discord's ephemeral message limits
 - **Dynamic presence** showing live active quiz count and total verified members (e.g., "Watching 2 active quizzes | 47 verified")
+- **Maintenance commands** including database reset script for clearing stuck sessions
 
 ## Tech Stack
 
@@ -53,7 +56,8 @@ A Discord verification bot that gates server access behind a configurable quiz. 
 
    Edit `config.json` to set:
    - Verification channel and role IDs
-   - Embed title, description, color, and button label
+   - Embed title, description, color, thumbnail, and button label
+   - Pass message title, description, and thumbnail
    - Questions per quiz and pass threshold
    - Cooldown base/max minutes
    - Admin role ID
@@ -101,7 +105,11 @@ A Discord verification bot that gates server access behind a configurable quiz. 
     "embedTitle": "Welcome!",
     "embedDescription": "Click below to begin the verification quiz.",
     "embedColor": "#5865F2",
-    "buttonLabel": "Start Verification Quiz"
+    "embedThumbnail": "",         // Optional: URL to thumbnail image on verification embed
+    "buttonLabel": "Start Verification Quiz",
+    "passTitle": "Quiz Passed!",  // Title shown when user passes
+    "passMessage": "You answered **{correct}/{total}** questions correctly. You have been assigned the verification role.",
+    "passThumbnail": ""           // Optional: URL to thumbnail image on pass message
   },
   "quiz": {
     "questionsPerQuiz": 10,       // Questions drawn per attempt
@@ -119,6 +127,22 @@ A Discord verification bot that gates server access behind a configurable quiz. 
 }
 ```
 
+**Embed Customization**:
+
+- `embedThumbnail` (optional) - URL to an image shown as a small square thumbnail on the right side of the verification embed. Leave empty (`""`) to hide. Example: `"https://i.imgur.com/yourimage.png"`
+- `passThumbnail` (optional) - URL to an image shown on the pass message embed. Can be the same as `embedThumbnail` or different. Leave empty to hide.
+
+**Pass Message Customization**:
+
+- `passTitle` - The title shown on the success embed (e.g., "Quiz Passed!", "Welcome!", "Success!")
+- `passMessage` - The description text. Supports template variables:
+  - `{correct}` - Number of questions answered correctly
+  - `{total}` - Total number of questions in the quiz
+
+Example:
+- Title: `"Welcome Aboard!"`
+- Message: `"You got {correct} out of {total} right!"` becomes `"You got 8 out of 10 right!"`
+
 ### Question JSON Format (for import)
 
 ```json
@@ -127,12 +151,23 @@ A Discord verification bot that gates server access behind a configurable quiz. 
     "type": "multiple_choice",
     "questionText": "What is the capital of France?",
     "choices": [
-      { "emoji": "🅰️", "label": "London", "isCorrect": false },
-      { "emoji": "🅱️", "label": "Paris", "isCorrect": true },
-      { "emoji": "🅲", "label": "Berlin", "isCorrect": false },
-      { "emoji": "🅳", "label": "Madrid", "isCorrect": false }
+      { "emoji": "", "label": "London", "isCorrect": false },
+      { "emoji": "", "label": "Paris", "isCorrect": true },
+      { "emoji": "", "label": "Berlin", "isCorrect": false },
+      { "emoji": "", "label": "Madrid", "isCorrect": false }
     ],
     "explanation": "Paris is the capital of France."
+  },
+  {
+    "type": "multiple_choice",
+    "questionText": "Which of the following are primary colors?",
+    "choices": [
+      { "emoji": "", "label": "Red", "isCorrect": true },
+      { "emoji": "", "label": "Green", "isCorrect": false },
+      { "emoji": "", "label": "Blue", "isCorrect": true },
+      { "emoji": "", "label": "Yellow", "isCorrect": true }
+    ],
+    "explanation": "Red, blue, and yellow are primary colors. Questions with multiple correct answers automatically become multi-select."
   },
   {
     "type": "text_input",
@@ -142,6 +177,12 @@ A Discord verification bot that gates server access behind a configurable quiz. 
   }
 ]
 ```
+
+**Important Notes**:
+- **Emoji field**: The `emoji` field in multiple-choice questions is optional and can be left empty (`""`). The bot automatically displays buttons with 1️⃣ 2️⃣ 3️⃣ 4️⃣ emojis regardless of what's in this field.
+- **Multi-select detection**: Questions with more than one `isCorrect: true` choice automatically become multi-select questions. The question will show "(Select all that apply)" in the title.
+- **Multi-select scoring**: Users must select ALL correct answers and NO incorrect ones to receive credit. Partial credit is not awarded.
+- **Answer shuffling**: Answer choices are automatically shuffled in a different order for each quiz attempt (but consistent within that attempt). The 1️⃣-4️⃣ emojis always stay in order.
 
 ## Slash Commands
 
@@ -161,16 +202,23 @@ User clicks "Start Verification Quiz" button (public embed)
   --> Bot checks cooldown (SQLite)
   --> Bot draws N random questions (SQLite)
   --> Bot creates quiz attempt record (SQLite)
+  --> Bot shuffles answer choices (deterministic per attempt)
   --> Bot sends ephemeral message with question 1
-  --> User answers via buttons (MC) or modal (text input)
+  --> User answers via buttons (MC, 1️⃣-4️⃣) or modal (text input)
   --> User navigates with Prev/Next (same message, edited in place)
+  --> Submit button disabled until all questions answered
   --> User clicks Submit
-  --> Bot scores the attempt
-  --> Pass: assign role, show result
-  --> Fail: record failure, set cooldown, show result
+  --> Bot scores the attempt (unshuffles answers for validation)
+  --> Pass: assign role, show success message with thumbnail
+  --> Fail: record failure, set cooldown, show retry time
 ```
 
-All quiz interactions are **ephemeral** -- only the user taking the quiz can see them. The single public message is the verification embed with the start button.
+**Key Design Decisions**:
+- All quiz interactions are **ephemeral** -- only the user taking the quiz can see them
+- The single public message is the verification embed with the start button
+- Answer shuffling uses deterministic seeding (attemptId + questionId) so the same user sees consistent ordering during their attempt
+- Multi-select questions are automatically detected (>1 correct answer) and show toggle behavior
+- Buttons show only emojis (1️⃣-4️⃣) with full answer text in the embed description
 
 ## Development
 
@@ -179,8 +227,20 @@ npm run dev          # Run with tsx (auto-restart on changes)
 npm run build        # Compile to dist/
 npm start            # Run compiled output
 npm run deploy-commands  # Register/update slash commands with Discord
+npm run reset-attempts   # Abandon in-progress quizzes and clear cooldowns
 npm test             # Run tests
 ```
+
+### Maintenance Commands
+
+**Reset Quiz Attempts**:
+```bash
+npm run reset-attempts
+```
+This command abandons all in-progress quiz attempts and clears all cooldowns. Useful for:
+- Clearing stuck quiz sessions during development/testing
+- Resetting cooldowns for users who need to retry immediately
+- Cleaning up the database before redeployment
 
 ## License
 

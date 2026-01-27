@@ -7,7 +7,11 @@ export const configSchema = z.object({
     embedTitle: z.string().default('Welcome!'),
     embedDescription: z.string().default('Click below to begin the verification quiz.'),
     embedColor: z.string().regex(/^#[0-9a-fA-F]{6}$/, 'embedColor must be a hex color like #5865F2').default('#5865F2'),
+    embedThumbnail: z.string().url().optional().or(z.literal('')),
     buttonLabel: z.string().default('Start Verification Quiz'),
+    passTitle: z.string().default('Quiz Passed!'),
+    passMessage: z.string().default('You answered **{correct}/{total}** questions correctly. You have been assigned the verification role.'),
+    passThumbnail: z.string().url().optional().or(z.literal('')),
   }),
   quiz: z.object({
     questionsPerQuiz: z.number().int().min(1).default(10),

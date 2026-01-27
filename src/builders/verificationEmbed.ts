@@ -13,6 +13,11 @@ export function buildVerificationEmbed(config: BotConfig) {
     .setDescription(config.verification.embedDescription)
     .setColor(parseInt(config.verification.embedColor.replace('#', ''), 16));
 
+  // Add thumbnail if configured
+  if (config.verification.embedThumbnail && config.verification.embedThumbnail.trim() !== '') {
+    embed.setThumbnail(config.verification.embedThumbnail);
+  }
+
   const button = new ButtonBuilder()
     .setCustomId(CustomIds.VERIFY_START)
     .setLabel(config.verification.buttonLabel)

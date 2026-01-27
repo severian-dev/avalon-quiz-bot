@@ -60,7 +60,7 @@ export async function execute(
     }
   } catch (error) {
     console.error('Interaction error:', error);
-    const reply = { content: 'Something went wrong. Please try again.', ephemeral: true };
+    const reply = { content: 'Something went wrong. Please try again.', flags: 64 };
     try {
       if (interaction.isRepliable()) {
         if (interaction.replied || interaction.deferred) {

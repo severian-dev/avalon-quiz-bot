@@ -9,6 +9,7 @@
     "build": "tsup",
     "start": "node --env-file=.env dist/index.js",
     "deploy-commands": "tsx --env-file=.env src/deploy-commands.ts",
+    "reset-attempts": "tsx --env-file=.env scripts/reset-attempts.ts",
     "test": "node --test --experimental-strip-types src/tests/**/*.test.ts"
   },
   "keywords": [

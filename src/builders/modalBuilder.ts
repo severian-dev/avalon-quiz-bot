@@ -8,7 +8,9 @@ import type { QuizAttempt } from '../types/index.js';
 import { CustomIds } from '../types/index.js';
 
 export function buildTextInputModal(attempt: QuizAttempt): ModalBuilder {
-  const currentAnswer = attempt.answers[String(attempt.questionIds[attempt.currentIndex])] ?? '';
+  const rawAnswer = attempt.answers[String(attempt.questionIds[attempt.currentIndex])] ?? '';
+  // Text input questions always store string answers, not arrays
+  const currentAnswer = typeof rawAnswer === 'string' ? rawAnswer : '';
 
   const modal = new ModalBuilder()
     .setCustomId(CustomIds.QUIZ_MODAL_SUBMIT)

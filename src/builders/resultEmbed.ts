@@ -4,17 +4,28 @@ import type { ScoreResult } from '../services/quizService.js';
 export function buildResultEmbed(
   result: ScoreResult,
   passThreshold: number,
+  passTitle: string,
+  passMessage: string,
+  passThumbnail?: string,
   cooldownUntil?: Date,
 ) {
   const embed = new EmbedBuilder();
 
   if (result.passed) {
+    // Replace template variables in pass message
+    const message = passMessage
+      .replace(/{correct}/g, String(result.correct))
+      .replace(/{total}/g, String(result.total));
+
     embed
-      .setTitle('Quiz Passed!')
-      .setDescription(
-        `You answered **${result.correct}/${result.total}** questions correctly. You have been assigned the verification role.`,
-      )
+      .setTitle(passTitle)
+      .setDescription(message)
       .setColor(0x57f287);
+
+    // Add thumbnail if configured
+    if (passThumbnail && passThumbnail.trim() !== '') {
+      embed.setThumbnail(passThumbnail);
+    }
   } else {
     let description = `You answered **${result.correct}/${result.total}** questions correctly. You needed at least **${passThreshold}** to pass.`;
 
@@ -29,5 +40,5 @@ export function buildResultEmbed(
       .setColor(0xed4245);
   }
 
-  return { embeds: [embed], components: [], ephemeral: true };
+  return { embeds: [embed], components: [] };
 }

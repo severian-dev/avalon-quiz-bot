@@ -5,7 +5,11 @@ export interface BotConfig {
     embedTitle: string;
     embedDescription: string;
     embedColor: string;
+    embedThumbnail?: string;
     buttonLabel: string;
+    passTitle: string;
+    passMessage: string;
+    passThumbnail?: string;
   };
   quiz: {
     questionsPerQuiz: number;

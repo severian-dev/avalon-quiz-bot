@@ -91,7 +91,7 @@ export async function execute(
     if (!member.roles.cache.has(config.admin.roleId)) {
       await interaction.reply({
         content: 'You do not have the required admin role.',
-        ephemeral: true,
+        flags: 64,
       });
       return;
     }
@@ -134,7 +134,7 @@ async function handleAddMC(
   } catch (e) {
     await interaction.reply({
       content: `Invalid choices JSON: ${e instanceof Error ? e.message : 'parse error'}.\nExpected format: \`[{"emoji":"🅰️","label":"Answer","isCorrect":true},...]\``,
-      ephemeral: true,
+      flags: 64,
     });
     return;
   }
@@ -142,7 +142,7 @@ async function handleAddMC(
   const id = questionRepo.add(db, 'multiple_choice', questionText, choices, null, explanation);
   await interaction.reply({
     content: `Added multiple-choice question **#${id}**.`,
-    ephemeral: true,
+    flags: 64,
   });
 }
 
@@ -157,7 +157,7 @@ async function handleAddText(
   const id = questionRepo.add(db, 'text_input', questionText, null, answer, explanation);
   await interaction.reply({
     content: `Added text-input question **#${id}**.`,
-    ephemeral: true,
+    flags: 64,
   });
 }
 
@@ -168,9 +168,9 @@ async function handleRemove(
   const id = interaction.options.getInteger('id', true);
   const removed = questionRepo.remove(db, id);
   if (removed) {
-    await interaction.reply({ content: `Removed question **#${id}**.`, ephemeral: true });
+    await interaction.reply({ content: `Removed question **#${id}**.`, flags: 64 });
   } else {
-    await interaction.reply({ content: `Question #${id} not found.`, ephemeral: true });
+    await interaction.reply({ content: `Question #${id} not found.`, flags: 64 });
   }
 }
 
@@ -187,7 +187,7 @@ async function handleList(
   if (questions.length === 0) {
     await interaction.reply({
       content: total === 0 ? 'No questions in the pool.' : 'No questions on this page.',
-      ephemeral: true,
+      flags: 64,
     });
     return;
   }
@@ -207,7 +207,7 @@ async function handleList(
     .setFooter({ text: `${total} total questions` })
     .setColor(0x5865f2);
 
-  await interaction.reply({ embeds: [embed], ephemeral: true });
+  await interaction.reply({ embeds: [embed], flags: 64 });
 }
 
 async function handleImport(
@@ -219,12 +219,12 @@ async function handleImport(
   if (!attachment.name.endsWith('.json')) {
     await interaction.reply({
       content: 'Please upload a .json file.',
-      ephemeral: true,
+      flags: 64,
     });
     return;
   }
 
-  await interaction.deferReply({ ephemeral: true });
+  await interaction.deferReply({ flags: 64 });
 
   try {
     const response = await fetch(attachment.url);
@@ -298,5 +298,5 @@ async function handleStats(
       { name: 'Abandoned', value: String(stats['abandoned'] ?? 0), inline: true },
     );
 
-  await interaction.reply({ embeds: [embed], ephemeral: true });
+  await interaction.reply({ embeds: [embed], flags: 64 });
 }

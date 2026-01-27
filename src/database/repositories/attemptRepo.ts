@@ -19,7 +19,7 @@ function rowToAttempt(row: AttemptRow): QuizAttempt {
     userId: row.user_id,
     guildId: row.guild_id,
     questionIds: JSON.parse(row.question_ids) as number[],
-    answers: JSON.parse(row.answers) as Record<string, string>,
+    answers: JSON.parse(row.answers) as Record<string, string | string[]>,
     currentIndex: row.current_index,
     status: row.status as QuizAttempt['status'],
     startedAt: row.started_at,
@@ -70,7 +70,7 @@ export function saveAnswer(
   db: Database.Database,
   attemptId: number,
   questionId: number,
-  answer: string,
+  answer: string | string[],
 ): void {
   const attempt = getById(db, attemptId);
   if (!attempt) return;

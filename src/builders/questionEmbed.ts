@@ -5,8 +5,9 @@ import {
   ButtonStyle,
 } from 'discord.js';
 import type { Question, QuizAttempt } from '../types/index.js';
-import { CustomIds } from '../types/index.js';
+import { CustomIds, isMultiSelectQuestion } from '../types/index.js';
 import { buildNavigationRow } from './navigationRow.js';
+import { seededShuffle, generateShuffleSeed } from '../utils/shuffle.js';
 
 export function buildQuestionMessage(
   question: Question,
@@ -15,43 +16,61 @@ export function buildQuestionMessage(
 ) {
   const index = attempt.currentIndex;
   const currentAnswer = attempt.answers[String(question.id)] ?? null;
+  const isMultiSelect = isMultiSelectQuestion(question);
 
   const embed = new EmbedBuilder()
-    .setTitle(`Question ${index + 1} of ${totalQuestions}`)
+    .setTitle(
+      `Question ${index + 1} of ${totalQuestions}${isMultiSelect ? ' (Select all that apply)' : ''}`,
+    )
     .setColor(0x5865f2);
 
   if (question.type === 'multiple_choice' && question.choices) {
-    const choiceLines = question.choices
+    // Shuffle choices deterministically based on attempt and question ID
+    const seed = generateShuffleSeed(attempt.id, question.id);
+    const shuffledChoices = seededShuffle(question.choices, seed);
+
+    // Fixed emojis for display (1️⃣ 2️⃣ 3️⃣ 4️⃣)
+    const displayEmojis = ['1️⃣', '2️⃣', '3️⃣', '4️⃣'];
+
+    const choiceLines = shuffledChoices
       .map((c, i) => {
-        const selected = currentAnswer === String(i);
+        const selected = isMultiSelect
+          ? Array.isArray(currentAnswer) && currentAnswer.includes(String(i))
+          : currentAnswer === String(i);
         const prefix = selected ? '**>' : ' ';
-        return `${prefix} ${c.emoji} ${c.label}${selected ? ' <**' : ''}`;
+        const emoji = displayEmojis[i] || `${i + 1}️⃣`;
+        return `${prefix} ${emoji} ${c.label}${selected ? ' <**' : ''}`;
       })
       .join('\n');
 
     embed.setDescription(`${question.questionText}\n\n${choiceLines}`);
 
-    const answerButtons = question.choices.map((choice, i) => {
+    const answerButtons = shuffledChoices.map((choice, i) => {
+      const selected = isMultiSelect
+        ? Array.isArray(currentAnswer) && currentAnswer.includes(String(i))
+        : currentAnswer === String(i);
+
+      const emoji = displayEmojis[i] || `${i + 1}️⃣`;
+
       const btn = new ButtonBuilder()
         .setCustomId(`${CustomIds.QUIZ_ANSWER_PREFIX}${i}`)
-        .setLabel(choice.label)
         .setStyle(
-          currentAnswer === String(i) ? ButtonStyle.Success : ButtonStyle.Secondary,
-        );
-      if (choice.emoji) {
-        try {
-          btn.setEmoji(choice.emoji);
-        } catch {
-          // Emoji not valid, skip
-        }
-      }
+          selected
+            ? ButtonStyle.Success
+            : isMultiSelect
+              ? ButtonStyle.Primary
+              : ButtonStyle.Secondary,
+        )
+        .setEmoji(emoji)
+        .setLabel(' '); // Space required when emoji is present
+
       return btn;
     });
 
     const answerRow = new ActionRowBuilder<ButtonBuilder>().addComponents(answerButtons);
-    const navRow = buildNavigationRow(index, totalQuestions);
+    const navRow = buildNavigationRow(attempt);
 
-    return { embeds: [embed], components: [answerRow, navRow], ephemeral: true };
+    return { embeds: [embed], components: [answerRow, navRow] };
   }
 
   // Text input question
@@ -67,7 +86,7 @@ export function buildQuestionMessage(
     .setStyle(currentAnswer ? ButtonStyle.Success : ButtonStyle.Primary);
 
   const answerRow = new ActionRowBuilder<ButtonBuilder>().addComponents(modalButton);
-  const navRow = buildNavigationRow(index, totalQuestions);
+  const navRow = buildNavigationRow(attempt);
 
-  return { embeds: [embed], components: [answerRow, navRow], ephemeral: true };
+  return { embeds: [embed], components: [answerRow, navRow] };
 }

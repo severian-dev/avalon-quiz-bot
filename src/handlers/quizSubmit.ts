@@ -51,7 +51,13 @@ export async function handleQuizSubmit(
       }
     }
 
-    const message = buildResultEmbed(result, config.quiz.passThreshold);
+    const message = buildResultEmbed(
+      result,
+      config.quiz.passThreshold,
+      config.verification.passTitle,
+      config.verification.passMessage,
+      config.verification.passThumbnail,
+    );
     await interaction.update(message);
     updatePresence(interaction.client, db);
   } else {
@@ -64,7 +70,14 @@ export async function handleQuizSubmit(
       config,
     );
 
-    const message = buildResultEmbed(result, config.quiz.passThreshold, cooldownUntil);
+    const message = buildResultEmbed(
+      result,
+      config.quiz.passThreshold,
+      config.verification.passTitle,
+      config.verification.passMessage,
+      config.verification.passThumbnail,
+      cooldownUntil,
+    );
     await interaction.update(message);
     updatePresence(interaction.client, db);
   }

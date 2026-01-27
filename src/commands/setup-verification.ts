@@ -20,7 +20,7 @@ export async function execute(
     if (!member.roles.cache.has(config.admin.roleId)) {
       await interaction.reply({
         content: 'You do not have the required admin role to use this command.',
-        ephemeral: true,
+        flags: 64,
       });
       return;
     }
@@ -30,7 +30,40 @@ export async function execute(
   if (!channel) {
     await interaction.reply({
       content: `Verification channel (${config.verification.channelId}) not found. Check config.json.`,
-      ephemeral: true,
+      flags: 64,
+    });
+    return;
+  }
+
+  // Check if bot has necessary permissions in the channel
+  const botMember = interaction.guild?.members.me;
+  if (!botMember) {
+    await interaction.reply({
+      content: 'Failed to get bot member information.',
+      flags: 64,
+    });
+    return;
+  }
+
+  const permissions = channel.permissionsFor(botMember);
+  const requiredPerms = [
+    PermissionFlagsBits.ViewChannel,
+    PermissionFlagsBits.SendMessages,
+    PermissionFlagsBits.EmbedLinks,
+  ];
+
+  const missingPerms = requiredPerms.filter((perm) => !permissions?.has(perm));
+  if (missingPerms.length > 0) {
+    const permNames = missingPerms.map((perm) => {
+      if (perm === PermissionFlagsBits.ViewChannel) return 'View Channel';
+      if (perm === PermissionFlagsBits.SendMessages) return 'Send Messages';
+      if (perm === PermissionFlagsBits.EmbedLinks) return 'Embed Links';
+      return 'Unknown';
+    });
+
+    await interaction.reply({
+      content: `Missing permissions in <#${config.verification.channelId}>:\n${permNames.map((p) => `• ${p}`).join('\n')}\n\nPlease add these permissions to the bot's role in that channel.`,
+      flags: 64,
     });
     return;
   }
@@ -40,6 +73,6 @@ export async function execute(
 
   await interaction.reply({
     content: `Verification embed posted in <#${config.verification.channelId}>.`,
-    ephemeral: true,
+    flags: 64,
   });
 }

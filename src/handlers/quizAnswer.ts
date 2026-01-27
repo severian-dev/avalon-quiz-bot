@@ -1,7 +1,7 @@
 import type { ButtonInteraction } from 'discord.js';
 import type Database from 'better-sqlite3';
 import type { BotConfig } from '../types/index.js';
-import { CustomIds } from '../types/index.js';
+import { CustomIds, isMultiSelectQuestion } from '../types/index.js';
 import * as attemptRepo from '../database/repositories/attemptRepo.js';
 import { getQuestionAtIndex, isExpired } from '../services/quizService.js';
 import { buildQuestionMessage } from '../builders/questionEmbed.js';
@@ -35,10 +35,8 @@ export async function handleQuizAnswer(
   const choiceIndex = interaction.customId.slice(CustomIds.QUIZ_ANSWER_PREFIX.length);
   const questionId = attempt.questionIds[attempt.currentIndex];
 
-  attemptRepo.saveAnswer(db, attempt.id, questionId, choiceIndex);
-
-  const updatedAttempt = attemptRepo.getById(db, attempt.id)!;
-  const question = getQuestionAtIndex(db, updatedAttempt);
+  // Get the question to determine if it's multi-select
+  const question = getQuestionAtIndex(db, attempt);
   if (!question) {
     await interaction.update({
       content: 'Failed to load question. Please contact an admin.',
@@ -48,6 +46,25 @@ export async function handleQuizAnswer(
     return;
   }
 
+  const isMultiSelect = isMultiSelectQuestion(question);
+  const currentAnswer = attempt.answers[String(questionId)] ?? null;
+
+  let newAnswer: string | string[];
+  if (isMultiSelect) {
+    // Toggle choice in/out of array
+    const current = Array.isArray(currentAnswer) ? currentAnswer : [];
+    const updated = current.includes(choiceIndex)
+      ? current.filter((i) => i !== choiceIndex)
+      : [...current, choiceIndex].sort();
+    newAnswer = updated;
+  } else {
+    // Single-select: replace with new choice
+    newAnswer = choiceIndex;
+  }
+
+  attemptRepo.saveAnswer(db, attempt.id, questionId, newAnswer);
+
+  const updatedAttempt = attemptRepo.getById(db, attempt.id)!;
   const message = buildQuestionMessage(question, updatedAttempt, updatedAttempt.questionIds.length);
   await interaction.update(message);
 }

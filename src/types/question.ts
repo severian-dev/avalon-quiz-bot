@@ -19,7 +19,7 @@ export interface QuizAttempt {
   userId: string;
   guildId: string;
   questionIds: number[];
-  answers: Record<string, string>;
+  answers: Record<string, string | string[]>;
   currentIndex: number;
   status: 'in_progress' | 'passed' | 'failed' | 'abandoned';
   startedAt: string;
@@ -32,4 +32,16 @@ export interface CooldownRecord {
   failCount: number;
   lastFailAt: string | null;
   cooldownUntil: string | null;
+}
+
+/**
+ * Determines if a question requires multiple selections.
+ * A question is multi-select if it has more than one correct choice.
+ */
+export function isMultiSelectQuestion(question: Question): boolean {
+  if (question.type !== 'multiple_choice' || !question.choices) {
+    return false;
+  }
+  const correctCount = question.choices.filter((c) => c.isCorrect).length;
+  return correctCount > 1;
 }
