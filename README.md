@@ -179,10 +179,10 @@ Example:
 ```
 
 **Important Notes**:
-- **Emoji field**: The `emoji` field in multiple-choice questions is optional. If provided and non-empty, it will be used for the choice button and display. If empty (`""`), the bot falls back to numbered emojis (1️⃣ 2️⃣ 3️⃣ 4️⃣).
+- **Emoji field**: The `emoji` field in multiple-choice questions is optional. If provided and non-empty, those emojis will be used in their original order. If empty (`""`), the bot falls back to numbered emojis (1️⃣ 2️⃣ 3️⃣ 4️⃣). Emojis stay in a fixed order (e.g., 🅰️ 🅱️ 🇨 🇩) while the answer text shuffles - this prevents answer sharing.
 - **Multi-select detection**: Questions with more than one `isCorrect: true` choice automatically become multi-select questions. The question will show "(SELECT MULTIPLE - Select all that apply)" in the title.
 - **Multi-select scoring**: Users must select ALL correct answers and NO incorrect ones to receive credit. Partial credit is not awarded.
-- **Answer shuffling**: Answer choices are automatically shuffled in a different order for each quiz attempt (but consistent within that attempt). Custom emojis shuffle along with their answers.
+- **Answer shuffling**: Answer choices are automatically shuffled in a different order for each quiz attempt (but consistent within that attempt). The emojis (🅰️ 🅱️ 🇨 🇩 or 1️⃣ 2️⃣ 3️⃣ 4️⃣) always stay in the same visual order.
 
 ## Slash Commands
 

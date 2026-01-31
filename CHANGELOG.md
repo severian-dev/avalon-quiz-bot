@@ -18,7 +18,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - **Verification embed thumbnail**: Added optional `verification.embedThumbnail` and `verification.passThumbnail` fields to display images on the verification embed and pass message. Leave empty to hide.
 - **3 free retries**: Users now get 3 consecutive quiz attempts without cooldown before exponential backoff kicks in. The 4th failure triggers a 5-minute cooldown, 5th triggers 10 minutes, etc.
 - **Wrong questions feedback**: Failure messages now show which questions were answered incorrectly (by question title) without revealing the correct answers, helping users study and improve.
-- **Custom choice emojis**: The `emoji` field in question choices is now used for display. If provided, it shows on buttons and in the answer list. Falls back to numbered emojis (1️⃣ 2️⃣ 3️⃣ 4️⃣) if empty.
+- **Custom choice emojis**: The `emoji` field in question choices is now respected. If provided, custom emojis (e.g., 🅰️ 🅱️ 🇨 🇩) are displayed in their original fixed order while answer text shuffles. Falls back to numbered emojis (1️⃣ 2️⃣ 3️⃣ 4️⃣) if empty. This maintains the anti-cheat mechanism where emojis stay consistent across attempts.
 
 ### Changed
 
