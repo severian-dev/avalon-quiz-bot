@@ -20,7 +20,7 @@ export function buildQuestionMessage(
 
   const embed = new EmbedBuilder()
     .setTitle(
-      `Question ${index + 1} of ${totalQuestions}${isMultiSelect ? ' (Select all that apply)' : ''}`,
+      `Question ${index + 1} of ${totalQuestions}${isMultiSelect ? ' (SELECT MULTIPLE - Select all that apply)' : ''}`,
     )
     .setColor(0x5865f2);
 

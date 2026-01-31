@@ -23,6 +23,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 - **Button labels simplified**: Multiple-choice buttons now show only emojis (or numbers as fallback) instead of full answer text, with answers displayed in the embed description.
 - **Cooldown timing**: Cooldown calculation adjusted so the 4th failure (first cooldown) starts at 5 minutes instead of 40 minutes, making the progression more forgiving.
+- **Multi-select indicator enhanced**: Multi-select questions now show "(SELECT MULTIPLE - Select all that apply)" in the title for extra clarity.
 
 ### Fixed
 
