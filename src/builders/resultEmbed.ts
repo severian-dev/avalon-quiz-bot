@@ -29,9 +29,23 @@ export function buildResultEmbed(
   } else {
     let description = `You answered **${result.correct}/${result.total}** questions correctly. You needed at least **${passThreshold}** to pass.`;
 
+    // Show which questions were wrong (all of them, no limit)
+    const wrongQuestions = result.details
+      .filter(d => !d.isCorrect)
+      .map(d => d.questionText);
+
+    if (wrongQuestions.length > 0) {
+      description += '\n\n**Questions you got wrong:**\n';
+      wrongQuestions.forEach(q => {
+        description += `- ${q}\n`;
+      });
+    }
+
     if (cooldownUntil) {
       const timestamp = Math.floor(cooldownUntil.getTime() / 1000);
-      description += `\n\nYou can try again <t:${timestamp}:R>.`;
+      description += `\nYou can try again <t:${timestamp}:R>.`;
+    } else {
+      description += '\nYou can try again immediately.';
     }
 
     embed

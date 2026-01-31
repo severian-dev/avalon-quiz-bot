@@ -76,7 +76,7 @@ export async function handleQuizSubmit(
       config.verification.passTitle,
       config.verification.passMessage,
       config.verification.passThumbnail,
-      cooldownUntil,
+      cooldownUntil ?? undefined,
     );
     await interaction.update(message);
     updatePresence(interaction.client, db);

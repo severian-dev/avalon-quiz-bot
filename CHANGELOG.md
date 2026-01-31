@@ -16,10 +16,13 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - **Reset attempts command**: Added `npm run reset-attempts` script to abandon all in-progress quizzes and clear cooldowns for testing/maintenance.
 - **Customizable pass message**: Added `verification.passTitle` and `verification.passMessage` config options to customize the success title and message shown when users pass the quiz. Pass message supports `{correct}` and `{total}` template variables.
 - **Verification embed thumbnail**: Added optional `verification.embedThumbnail` and `verification.passThumbnail` fields to display images on the verification embed and pass message. Leave empty to hide.
+- **3 free retries**: Users now get 3 consecutive quiz attempts without cooldown before exponential backoff kicks in. The 4th failure triggers a 5-minute cooldown, 5th triggers 10 minutes, etc.
+- **Wrong questions feedback**: Failure messages now show which questions were answered incorrectly (by question title) without revealing the correct answers, helping users study and improve.
 
 ### Changed
 
 - **Button labels simplified**: Multiple-choice buttons now show only emojis (or numbers as fallback) instead of full answer text, with answers displayed in the embed description.
+- **Cooldown timing**: Cooldown calculation adjusted so the 4th failure (first cooldown) starts at 5 minutes instead of 40 minutes, making the progression more forgiving.
 
 ### Fixed
 

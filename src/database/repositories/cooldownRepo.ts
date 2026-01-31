@@ -34,7 +34,7 @@ export function upsert(
   userId: string,
   guildId: string,
   failCount: number,
-  cooldownUntil: string,
+  cooldownUntil: string | null,
 ): void {
   db.prepare(`
     INSERT INTO cooldowns (user_id, guild_id, fail_count, last_fail_at, cooldown_until)

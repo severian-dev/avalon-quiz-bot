@@ -27,13 +27,22 @@ export function recordFailure(
   userId: string,
   guildId: string,
   config: BotConfig,
-): Date {
+): Date | null {
   const record = cooldownRepo.get(db, userId, guildId);
   const newFailCount = (record?.failCount ?? 0) + 1;
-  const cooldownMinutes = calculateCooldownMinutes(newFailCount, config);
-  const cooldownUntil = new Date(Date.now() + cooldownMinutes * 60_000);
-  cooldownRepo.upsert(db, userId, guildId, newFailCount, cooldownUntil.toISOString().replace('Z', ''));
-  return cooldownUntil;
+
+  // Only apply cooldown after 3rd failure
+  if (newFailCount > 3) {
+    // Adjust cooldown so 4th failure = 1st cooldown (5 min)
+    const cooldownMinutes = calculateCooldownMinutes(newFailCount - 3, config);
+    const cooldownUntil = new Date(Date.now() + cooldownMinutes * 60_000);
+    cooldownRepo.upsert(db, userId, guildId, newFailCount, cooldownUntil.toISOString().replace('Z', ''));
+    return cooldownUntil;
+  } else {
+    // Record the failure but don't set cooldown
+    cooldownRepo.upsert(db, userId, guildId, newFailCount, null);
+    return null;
+  }
 }
 
 export function resetCooldown(
