@@ -29,8 +29,8 @@ export function buildQuestionMessage(
     const seed = generateShuffleSeed(attempt.id, question.id);
     const shuffledChoices = seededShuffle(question.choices, seed);
 
-    // Fixed emojis for display (1️⃣ 2️⃣ 3️⃣ 4️⃣)
-    const displayEmojis = ['1️⃣', '2️⃣', '3️⃣', '4️⃣'];
+    // Fallback emojis if none provided (1️⃣ 2️⃣ 3️⃣ 4️⃣)
+    const fallbackEmojis = ['1️⃣', '2️⃣', '3️⃣', '4️⃣'];
 
     const choiceLines = shuffledChoices
       .map((c, i) => {
@@ -38,7 +38,8 @@ export function buildQuestionMessage(
           ? Array.isArray(currentAnswer) && currentAnswer.includes(String(i))
           : currentAnswer === String(i);
         const prefix = selected ? '**>' : ' ';
-        const emoji = displayEmojis[i] || `${i + 1}️⃣`;
+        // Use choice's emoji if provided, otherwise fall back to numbered emoji
+        const emoji = c.emoji && c.emoji.trim() !== '' ? c.emoji : (fallbackEmojis[i] || `${i + 1}️⃣`);
         return `${prefix} ${emoji} ${c.label}${selected ? ' <**' : ''}`;
       })
       .join('\n');
@@ -50,7 +51,8 @@ export function buildQuestionMessage(
         ? Array.isArray(currentAnswer) && currentAnswer.includes(String(i))
         : currentAnswer === String(i);
 
-      const emoji = displayEmojis[i] || `${i + 1}️⃣`;
+      // Use choice's emoji if provided, otherwise fall back to numbered emoji
+      const emoji = choice.emoji && choice.emoji.trim() !== '' ? choice.emoji : (fallbackEmojis[i] || `${i + 1}️⃣`);
 
       const btn = new ButtonBuilder()
         .setCustomId(`${CustomIds.QUIZ_ANSWER_PREFIX}${i}`)
